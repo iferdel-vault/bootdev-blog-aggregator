@@ -33,8 +33,8 @@ func main() {
 
 	args := stdin[1:]
 	cmd := command{
-		name: args[0],
-		args: args[1:],
+		Name: args[0],
+		Args: args[1:],
 	}
 
 	err = cmds.run(&s, cmd)

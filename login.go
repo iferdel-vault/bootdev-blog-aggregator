@@ -7,11 +7,11 @@ import (
 
 func handlerLogin(s *state, cmd command) error {
 
-	if len(cmd.args) != 1 {
+	if len(cmd.Args) != 1 {
 		return errors.New("the login handler expects a single argument, the username.")
 	}
 
-	username := cmd.args[0]
+	username := cmd.Args[0]
 
 	if err := s.cfg.SetUser(username); err != nil {
 		return err
