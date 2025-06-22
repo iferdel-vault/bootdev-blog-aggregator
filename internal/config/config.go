@@ -62,7 +62,7 @@ func write(cfg Config) error {
 		return fmt.Errorf("error marshalling config file after SetUser: %w", err)
 	}
 
-	err = os.WriteFile(configFilePath, dat, 744)
+	err = os.WriteFile(configFilePath, dat, 0644)
 	if err != nil {
 		return fmt.Errorf("error writing config file: %w", err)
 	}
