@@ -13,7 +13,7 @@ func getConfigFilePath() (string, error) {
 	if err != nil {
 		return "", fmt.Errorf("error getting user home directory: %w", err)
 	}
-	configFilePath := homeDir + configFileName
+	configFilePath := homeDir + "/" + configFileName
 	return configFilePath, nil
 }
 
