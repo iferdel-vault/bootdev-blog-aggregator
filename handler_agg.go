@@ -5,14 +5,14 @@ import (
 	"fmt"
 )
 
-func handlerAggRSS(s *state, cmd command) error {
+func handlerAgg(s *state, cmd command) error {
 
-	rssFeed, err := fetchFeed(context.Background(), rssUrl)
+	feed, err := fetchFeed(context.Background(), rssUrl)
 	if err != nil {
 		return fmt.Errorf("could not fetch feed: %w", err)
 	}
 
-	fmt.Println(rssFeed)
+	fmt.Printf("Feed: %+v\n", feed)
 
 	return nil
 }
