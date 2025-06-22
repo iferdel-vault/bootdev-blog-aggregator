@@ -7,6 +7,15 @@ import (
 	"github.com/iferdel-vault/bootdev-blog-aggregator/internal/config"
 )
 
+type state struct {
+	cfg *config.Config
+}
+
+type command struct {
+	name string
+	args []string
+}
+
 func main() {
 
 	cfg, err := config.Read()
