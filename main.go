@@ -39,7 +39,7 @@ func main() {
 	cmds.register("login", handlerLogin)
 	cmds.register("register", handlerRegister)
 	cmds.register("reset", handlerReset)
-	cmds.register("users", handlerUsers)
+	cmds.register("users", handlerListUsers)
 	stdin := os.Args
 
 	if len(stdin) < 2 {
