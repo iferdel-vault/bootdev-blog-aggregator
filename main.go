@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"os"
 
 	"github.com/iferdel-vault/bootdev-blog-aggregator/internal/config"
 )
@@ -50,13 +51,29 @@ func main() {
 	if err != nil {
 		log.Fatalf("error with reading config file: %v", err)
 	}
-	err = cfg.SetUser("iferdel")
-	if err != nil {
-		log.Fatalf("error with setting user in config file: %v", err)
+	var s state
+	s.cfg = &cfg
+
+	cmds := commands{
+		cmdList: make(map[string]func(*state, command) error),
 	}
-	cfg, err = config.Read()
-	if err != nil {
-		log.Fatalf("error with reading config file: %v", err)
+
+	cmds.register("login", handlerLogin)
+	stdin := os.Args
+
+	if len(stdin) < 2 {
+		log.Fatalf("not enough arguments passed, exiting...")
 	}
-	fmt.Println(cfg)
+
+	args := stdin[1:]
+	cmd := command{
+		name: args[0],
+		args: args[1:],
+	}
+
+	err = cmds.run(&s, cmd)
+	if err != nil {
+		log.Fatalf("error with running command: %v", err)
+	}
+
 }
