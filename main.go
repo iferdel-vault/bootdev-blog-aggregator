@@ -16,15 +16,16 @@ type state struct {
 }
 
 func main() {
-
 	cfg, err := config.Read()
 	if err != nil {
 		log.Fatalf("error with reading config file: %v", err)
 	}
+
 	db, err := sql.Open("postgres", cfg.DBUrl)
 	if err != nil {
-		log.Fatalf("error opening connection to DBUrl")
+		log.Fatalf("error opening connection to DBUrl: %v", err)
 	}
+	defer db.Close()
 	dbQueries := database.New(db)
 
 	var s state
