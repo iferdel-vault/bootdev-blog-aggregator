@@ -11,16 +11,15 @@ func main() {
 
 	cfg, err := config.Read()
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("error with reading config file: %v", err)
 	}
-	fmt.Println(cfg)
 	err = cfg.SetUser("iferdel")
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("error with setting user in config file: %v", err)
 	}
 	cfg, err = config.Read()
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("error with reading config file: %v", err)
 	}
 	fmt.Println(cfg)
 }
