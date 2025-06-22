@@ -17,6 +17,7 @@ func main() {
 	if err != nil {
 		log.Fatalf("error with reading config file: %v", err)
 	}
+
 	var s state
 	s.cfg = &cfg
 
