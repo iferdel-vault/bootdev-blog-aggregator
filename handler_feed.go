@@ -9,13 +9,19 @@ import (
 	"github.com/iferdel-vault/bootdev-blog-aggregator/internal/database"
 )
 
-func handlerGetFeeds(s *state, cmd command) error {
+func handlerListFeeds(s *state, cmd command) error {
 
 	feeds, err := s.db.GetFeeds(context.Background())
 	if err != nil {
 		return fmt.Errorf("couldn't get feeds: %w", err)
 	}
 
+	if len(feeds) == 0 {
+		fmt.Println("No feeds found.")
+		return nil
+	}
+
+	fmt.Printf("Found %d feeds:\n", len(feeds))
 	for _, feed := range feeds {
 		fmt.Printf("* Name:      %s\n", feed.Name)
 		fmt.Printf("* URL:       %v\n", feed.Url)
