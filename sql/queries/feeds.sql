@@ -14,3 +14,9 @@ RETURNING *;
 SELECT feeds.id, feeds.created_at, feeds.updated_at, feeds.name, feeds.url, users.name
 FROM feeds
 JOIN users on feeds.user_id = users.id;
+
+-- name: GetFeedByURL :one
+SELECT id, created_at, updated_at, name, url
+FROM feeds
+WHERE url = $1;
+
