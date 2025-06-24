@@ -9,8 +9,6 @@ import (
 	"time"
 )
 
-const rssUrl = "https://www.wagslane.dev/index.xml"
-
 type RSSFeed struct {
 	Channel struct {
 		Title       string    `xml:"title"`
