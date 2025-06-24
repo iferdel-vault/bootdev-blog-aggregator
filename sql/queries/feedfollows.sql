@@ -21,6 +21,7 @@ WITH cte AS
 FROM cte
 	JOIN users ON cte.user_id = users.id
 	JOIN feeds ON cte.feed_id = feeds.id;
+--
 
 -- name: GetFeedFollowsForUser :many
 SELECT 
@@ -31,3 +32,8 @@ FROM feed_follows
 	JOIN users ON feed_follows.user_id = users.id
 	JOIN feeds ON feed_follows.feed_id = feeds.id
 WHERE users.id = $1;
+--
+
+-- name: DeleteFeedFollow :exec
+DELETE FROM feed_follows WHERE user_id = $1 AND feed_id = $2;
+--
