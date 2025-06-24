@@ -21,3 +21,13 @@ WITH cte AS
 FROM feed_follows
 	JOIN users ON feed_follows.user_id = users.id
 	JOIN feeds ON feed_follows.feed_id = feeds.id;
+
+-- name: GetFeedFollowsForUser :many
+SELECT 
+	feed_follows.*, 
+ 	users.name AS user_name,
+	feeds.name AS feed_name
+FROM feed_follows
+JOIN users ON feed_follows.user_id = users.id
+JOIN feeds ON feed_follows.feed_id = feeds.id
+WHERE users.id = $1;
