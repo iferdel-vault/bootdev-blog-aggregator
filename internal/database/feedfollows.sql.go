@@ -24,15 +24,14 @@ WITH cte AS
 		$5
 	)
 	RETURNING id, created_at, updated_at, user_id, feed_id
-) SELECT (
+) SELECT
 	cte.id,
 	cte.created_at,
 	cte.updated_at,
 	cte.user_id,
 	cte.feed_id,
-	users.name,
-	feeds.name
-)
+	users.name AS user_name,
+	feeds.name AS feed_name
 FROM cte
 	JOIN users ON cte.user_id = users.id
 	JOIN feeds ON cte.feed_id = feeds.id
@@ -46,7 +45,17 @@ type CreateFeedFollowParams struct {
 	FeedID    uuid.UUID
 }
 
-func (q *Queries) CreateFeedFollow(ctx context.Context, arg CreateFeedFollowParams) (interface{}, error) {
+type CreateFeedFollowRow struct {
+	ID        uuid.UUID
+	CreatedAt time.Time
+	UpdatedAt time.Time
+	UserID    uuid.UUID
+	FeedID    uuid.UUID
+	UserName  string
+	FeedName  string
+}
+
+func (q *Queries) CreateFeedFollow(ctx context.Context, arg CreateFeedFollowParams) (CreateFeedFollowRow, error) {
 	row := q.db.QueryRowContext(ctx, createFeedFollow,
 		arg.ID,
 		arg.CreatedAt,
@@ -54,9 +63,17 @@ func (q *Queries) CreateFeedFollow(ctx context.Context, arg CreateFeedFollowPara
 		arg.UserID,
 		arg.FeedID,
 	)
-	var column_1 interface{}
-	err := row.Scan(&column_1)
-	return column_1, err
+	var i CreateFeedFollowRow
+	err := row.Scan(
+		&i.ID,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.UserID,
+		&i.FeedID,
+		&i.UserName,
+		&i.FeedName,
+	)
+	return i, err
 }
 
 const getFeedFollowsForUser = `-- name: GetFeedFollowsForUser :many
@@ -65,8 +82,8 @@ SELECT
  	users.name AS user_name,
 	feeds.name AS feed_name
 FROM feed_follows
-JOIN users ON feed_follows.user_id = users.id
-JOIN feeds ON feed_follows.feed_id = feeds.id
+	JOIN users ON feed_follows.user_id = users.id
+	JOIN feeds ON feed_follows.feed_id = feeds.id
 WHERE users.id = $1
 `
 

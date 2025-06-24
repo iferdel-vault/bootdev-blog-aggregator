@@ -25,7 +25,7 @@ func handlerListFeeds(s *state, cmd command) error {
 	for _, feed := range feeds {
 		fmt.Printf("* Name:      %s\n", feed.Name)
 		fmt.Printf("* URL:       %v\n", feed.Url)
-		fmt.Printf("* Username:  %v\n", feed.Name_2)
+		fmt.Printf("* Username:  %v\n", feed.UserName)
 	}
 
 	return nil
@@ -70,6 +70,7 @@ func handlerAddFeed(s *state, cmd command) error {
 	fmt.Println("Feed created successfully:")
 	printFeed(feed)
 	fmt.Println()
+	fmt.Println("Feed followed successfully:")
 	fmt.Println("=====================================")
 	return nil
 }

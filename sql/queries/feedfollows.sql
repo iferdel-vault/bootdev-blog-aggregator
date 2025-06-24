@@ -10,15 +10,14 @@ WITH cte AS
 		$5
 	)
 	RETURNING *
-) SELECT (
+) SELECT
 	cte.id,
 	cte.created_at,
 	cte.updated_at,
 	cte.user_id,
 	cte.feed_id,
-	users.name,
-	feeds.name
-)
+	users.name AS user_name,
+	feeds.name AS feed_name
 FROM cte
 	JOIN users ON cte.user_id = users.id
 	JOIN feeds ON cte.feed_id = feeds.id;
@@ -29,6 +28,6 @@ SELECT
  	users.name AS user_name,
 	feeds.name AS feed_name
 FROM feed_follows
-JOIN users ON feed_follows.user_id = users.id
-JOIN feeds ON feed_follows.feed_id = feeds.id
+	JOIN users ON feed_follows.user_id = users.id
+	JOIN feeds ON feed_follows.feed_id = feeds.id
 WHERE users.id = $1;
