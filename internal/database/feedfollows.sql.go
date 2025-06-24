@@ -23,18 +23,19 @@ WITH cte AS
 		$4,
 		$5
 	)
+	RETURNING id, created_at, updated_at, user_id, feed_id
 ) SELECT (
-	feed_follows.id,
-	feed_follows.created_at,
-	feed_follows.updated_at,
-	feed_follows.user_id,
-	feed_follows.feed_id,
+	cte.id,
+	cte.created_at,
+	cte.updated_at,
+	cte.user_id,
+	cte.feed_id,
 	users.name,
 	feeds.name
 )
-FROM feed_follows
-	JOIN users ON feed_follows.user_id = users.id
-	JOIN feeds ON feed_follows.feed_id = feeds.id
+FROM cte
+	JOIN users ON cte.user_id = users.id
+	JOIN feeds ON cte.feed_id = feeds.id
 `
 
 type CreateFeedFollowParams struct {
