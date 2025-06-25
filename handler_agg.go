@@ -2,11 +2,15 @@ package main
 
 import (
 	"context"
+	"database/sql"
+	"errors"
 	"fmt"
 	"log"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/iferdel-vault/bootdev-blog-aggregator/internal/database"
+	"github.com/jackc/pgx/v5/pgconn"
 )
 
 func scrapeFeeds(s *state) {
@@ -34,6 +38,31 @@ func scrapeFeed(db *database.Queries, feed database.Feed) {
 
 	for _, item := range feedData.Channel.Item {
 		fmt.Printf("Found post: %s\n", item.Title)
+
+		pubAt, err := time.Parse("RFC3339", item.PubDate)
+		if err != nil {
+			log.Println("couldn't parse datetime of post for published at:", item.PubDate)
+			continue
+		}
+
+		_, err = db.CreatePost(context.Background(), database.CreatePostParams{
+			ID:          uuid.New(),
+			CreatedAt:   time.Now(),
+			UpdatedAt:   time.Now(),
+			Title:       item.Title,
+			Description: sql.NullString{String: item.Description, Valid: true},
+			Url:         item.Link,
+			PublishedAt: pubAt,
+			FeedID:      feed.ID,
+		})
+
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) && pgErr.Code == "42710" {
+			continue
+		} else {
+			log.Println("couldn't create post:", err)
+			continue
+		}
 	}
 	log.Printf("Feed %s collected, %v posts found", feed.Name, len(feedData.Channel.Item))
 }
