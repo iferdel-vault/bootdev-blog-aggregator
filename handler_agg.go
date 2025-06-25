@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"strings"
 	"time"
 
 	"github.com/google/uuid"
@@ -39,10 +40,12 @@ func scrapeFeed(db *database.Queries, feed database.Feed) {
 	for _, item := range feedData.Channel.Item {
 		fmt.Printf("Found post: %s\n", item.Title)
 
-		pubAt, err := time.Parse("RFC3339", item.PubDate)
-		if err != nil {
-			log.Println("couldn't parse datetime of post for published at:", item.PubDate)
-			continue
+		publishedAt := sql.NullTime{}
+		if t, err := time.Parse(time.RFC1123Z, item.PubDate); err == nil {
+			publishedAt = sql.NullTime{
+				Time:  t,
+				Valid: true,
+			}
 		}
 
 		_, err = db.CreatePost(context.Background(), database.CreatePostParams{
@@ -52,15 +55,19 @@ func scrapeFeed(db *database.Queries, feed database.Feed) {
 			Title:       item.Title,
 			Description: sql.NullString{String: item.Description, Valid: true},
 			Url:         item.Link,
-			PublishedAt: pubAt,
+			PublishedAt: publishedAt,
 			FeedID:      feed.ID,
 		})
 
 		var pgErr *pgconn.PgError
-		if errors.As(err, &pgErr) && pgErr.Code == "42710" {
-			continue
-		} else {
-			log.Println("couldn't create post:", err)
+		if err != nil {
+			if (strings.Contains(err.Error(), "duplicate key value violates unique constraint")) ||
+				(errors.As(err, &pgErr) && pgErr.Code == "42710") {
+				log.Printf("Skipping duplicate: %v", err)
+				continue
+			}
+
+			log.Printf("Couldn't create post: %v", err)
 			continue
 		}
 	}
